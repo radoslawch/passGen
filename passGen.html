@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>passGen</title>
+  <meta charset="UTF-8">  
+  <link rel="stylesheet" type="text/css" href="passGen.css">
+</head>
+
+<body>
+<script src="passGen.js"></script>
+<div class="wrapper">
+
+<div class="inputField">
+<textarea id="input" rows="8" cols="50">
+John Smith
+Brian Gregory Williams-Adams
+Ąęół Ńćźż
+</textarea>
+</div>
+
+<div class="outputField">
+<textarea id="output" rows="8" cols="75" readonly>
+</textarea>
+</div>
+
+<div class="configFields1">
+Name: 
+First<input id="nameFirst" type="radio" name="namePosition" checked> 
+Last<input id="nameLast" type="radio" name="namePosition">
+<br>
+Include input in output<input id="includeInput" type="checkbox" name="includeInput" checked>
+<br>
+Remove diacritics from output<input id="removeDiacritics" type="checkbox" name="removeDiacritics" checked>
+</div>
+
+<div class="configFields2">
+  Minimum characters<input id="minimumCharacters" type="number" name="minimumCharacters" width=2 value=6>
+  <br>
+  Must include:
+  <br>
+  lowercase letter<input id="mustIncludeLowercase" type="checkbox" name="mustIncludeLowercase">  
+  <br>
+  uppercase letter<input id="mustIncludeUppercase" type="checkbox" name="mustIncludeUppercase">
+  <br>
+  number<input id="mustIncludeNumber" type="checkbox" name="mustIncludeNumber">
+  <br>
+  special character<input id="mustIncludeSpecial" type="checkbox" name="mustIncludeSpecial">
+  <br><br>
+  include randomly<input id="includeRandomly" type="checkbox" name="includeRandomly">
+  </div>
+<div class="passConfig">
+pass output format: 
+<input id="passOutputFormat" value = "Nn\1234">
+<br>
+Each character in field above contributes to generated password<br>
+n/N -- each next letter from name in lowercase/uppercase<br>
+s/S -- each next letter from surname in lowercase/uppercase<br>
+z/Z -- one part of name<br>
+m/M -- one part of surname<br>
+a/A -- random letter in lowercase/uppercase<br>
+q/Q -- random letter<br>
+1 -- random number<br>
+% -- random special character<br>
+* -- random character<br>
+C -- random noun<br>
+V -- random verb<br>
+B -- random adjective<br>
+\ -- treat next character literally<br>
+</div>
+
+<div class="loginConfig">
+login output format: 
+<input id="loginOutputFormat" value = "nS">
+<br>
+Each character in field above contributes to generated login<br>
+n -- one character from name<br>
+N -- one part of name<br>
+s -- one character from surname<br>
+S -- one part of surname<br>
+\ -- treat next character literally<br>
+</div>
+
+</div>
+</body>
+</html>

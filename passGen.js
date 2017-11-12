@@ -7,7 +7,11 @@ function inputOnChange(){
 	let j = 0;
 	for(let row of rows){
 		j++;
-		if(row.length < 2)continue;
+		// ignore rows with no characters
+		if(row.length < 1){
+			continue;
+		}
+		// split rows by spaces
 		data[i++] = rows[j-1].split(' ');
 	}
 	buildOutputString(data);
@@ -15,7 +19,6 @@ function inputOnChange(){
 
 function buildOutputString(data){
 	let maxLength = [];
-	let fullName = ['user'];
 	let login = [];
 	let pass = [];
 	let fullNameArray = [];
@@ -24,7 +27,8 @@ function buildOutputString(data){
 	let outputString = [];
 	let forename = '';
 	let surname = '';
-	
+
+	// special characters array
 	let charArray = [];
 	for(let i = 33; i < 48; i++){
 		charArray.push(String.fromCharCode(i));
@@ -39,36 +43,49 @@ function buildOutputString(data){
 		charArray.push(String.fromCharCode(i));
 	}
 	let charArrayLength = charArray.length;
-	
+
 	// output arrays
-	// first element is first row of the output table
+	// first element is first row of the output table (header)
 	fullNameArray[0] = 'user';
 	loginArray[0] = 'login';
 	passArray[0] = 'pass';
+
+	// for each row of input data
 	for (let i = 0; i < data.length; i++){
 		let row = data[i];
 		let forename = data[i];
 		let surname = data[i];
 		fullNameArray[i+1] = row.join(' ');
-		
+
+		// assuming polish (as in Poland) naming format
 		if(document.getElementById('nameLast').checked){
-			// assuming naming format
-			// firstSurname(-secondSurname) firstForename (secondForename ... lastForename) 			
-			forename = surname.splice(1);		
+			// firstSurname(-secondSurname) firstForename (secondForename ... lastForename)
+			// forename is last
+			// leave the first element as surname
+			// assign the rest as forename
+			forename = surname.splice(1);
 		}else{
-			// assuming naming format
-			// firstForename (secondForename ... lastForename) firstSurname(-secondSurname)						
+			// firstForename (secondForename ... lastForename) firstSurname(-secondSurname)
+			// forename is first
+			// leave the last element as surname
+			// assign the rest as forename
 			surname = forename.splice(forename.length-1);
 		}
+		// surname and forename are arrays made from strings seperated with spaces
+		// surname always has one element
+		// forename has number of elements equal to number of names
+
+		// join names to make a string from an array for further use
 		let joinedForename = forename.join('');
-		let splitSurname = surname.join('').split('-');
 		let joinedSurname = surname.join('').replace('-','');
-		
-		
+		// split surname by "-" to make an array of surname parts
+		let splitSurname = surname.join('').split('-');
+
+
 		let passOutputFormat = document.getElementById('passOutputFormat').value;
 		let loginOutputFormat = document.getElementById('loginOutputFormat').value;
-		
-		
+
+		// build login
 		loginArray[i+1] = '';
 		let iN = 0;
 		let iS = 0;
@@ -76,75 +93,109 @@ function buildOutputString(data){
 		let iSS = 0;
 		for(let ii = 0; ii < loginOutputFormat.length; ii++){
 			if(loginOutputFormat[ii] == 'N' && typeof forename[iNN] != 'undefined'){
+				// add whole forename
 				loginArray[i+1] += forename[iNN++];
 			}else if (loginOutputFormat[ii] == 'n'){
+				// add one letter from forename
 				if(typeof joinedForename[iN] != 'undefined')loginArray[i+1] += joinedForename[iN++];
 			}else if (loginOutputFormat[ii] == 'S' && typeof splitSurname[iSS] != 'undefined'){
+				// add whole surname
 				loginArray[i+1] += splitSurname[iSS++];
 			}else if (loginOutputFormat[ii] == 's'){
+				// add one letter from surename
 				if(typeof joinedSurname[iS] != 'undefined')loginArray[i+1] += joinedSurname[iS++];
-			}else if (loginOutputFormat[ii] == '\\' && ii < loginOutputFormat.length - 1){ //treat next character literally
+			}else if (loginOutputFormat[ii] == '\\' && ii < loginOutputFormat.length - 1){
+				// add next character from template (which follows "\" character)
 				loginArray[i+1] += loginOutputFormat[++ii];
 			}else{
-				loginArray[i+1] += loginOutputFormat[ii];			
+				// add next character
+				loginArray[i+1] += loginOutputFormat[ii];
 			}
 			loginArray[i+1] = loginArray[i+1].toLowerCase();
 		}
-		
-		
+
+		if(document.getElementById('removeDiacriticsFromLogin').checked){
+			// remove diacritics from login
+			for (let i = 0; i < loginArray.length; i++){
+				loginArray[i] = loginArray[i].removeDiacritics();
+			}
+		}
+
+		// build password
 		passArray[i+1] = '';
 		iN = 0;
 		iS = 0;
 		iNN = 0;
 		iSS = 0;
 		for(let ii = 0; ii < passOutputFormat.length; ii++){
-			if(passOutputFormat[ii] == 'N'){
-				if(typeof joinedForename[iN] != 'undefined')passArray[i+1] += joinedForename[iN++].toUpperCase();
-			}else if (passOutputFormat[ii] == 'n'){
-				if(typeof joinedForename[iN] != 'undefined')passArray[i+1] += joinedForename[iN++].toLowerCase();
-			}else if (passOutputFormat[ii] == 'S'){
-				if(typeof joinedSurname[iS] != 'undefined')passArray[i+1] += joinedSurname[iS++].toUpperCase();
-			}else if (passOutputFormat[ii] == 's'){
-				if(typeof joinedSurname[iS] != 'undefined')	passArray[i+1] += joinedSurname[iS++].toLowerCase();
-			}else if ((passOutputFormat[ii] == 'Z' || passOutputFormat[ii] == 'z') && typeof splitSurname[iSS] != 'undefined'){
+			if(passOutputFormat[ii] == 'N' && typeof joinedForename[iN] != 'undefined'){
+				// add next letter from name in uppercase
+				passArray[i+1] += joinedForename[iN++].toUpperCase();
+			}else if (passOutputFormat[ii] == 'n' && typeof joinedForename[iN] != 'undefined'){
+				// add next letter from name in lowercase
+				passArray[i+1] += joinedForename[iN++].toLowerCase();
+			}else if (passOutputFormat[ii] == 'S' && typeof joinedSurname[iS] != 'undefined'){
+				// add next letter from surname in uppercase
+				passArray[i+1] += joinedSurname[iS++].toUpperCase();
+			}else if (passOutputFormat[ii] == 's' && typeof joinedSurname[iS] != 'undefined'){
+				// add next letter from surname in lowercase
+				passArray[i+1] += joinedSurname[iS++].toLowerCase();
+			}else if ((passOutputFormat[ii] == 'Z' || passOutputFormat[ii] == 'z')
+				&& typeof splitSurname[iSS] != 'undefined'){
+				// add whole next surname
 				passArray[i+1] += splitSurname[iSS++];
-			}else if ((passOutputFormat[ii] == 'M' || passOutputFormat[ii] == 'm') && typeof forename[iNN] != 'undefined'){
+			}else if ((passOutputFormat[ii] == 'M' || passOutputFormat[ii] == 'm')
+				&& typeof forename[iNN] != 'undefined'){
+				// add whole next name
 				passArray[i+1] += forename[iNN++];
 			}else if (passOutputFormat[ii] == 'A'){
-				passArray[i+1] +=  String.fromCharCode(Math.floor(Math.random() * 25) + 65); // random uppercase letter;
+				// add random uppercase letter
+				passArray[i+1] +=  String.fromCharCode(Math.floor(Math.random() * 25) + 65);
 			}else if (passOutputFormat[ii] == 'a'){
-				passArray[i+1] += String.fromCharCode(Math.floor(Math.random() * 25) + 97); // random lowercase letter;
+				// add random lowercase letter
+				passArray[i+1] += String.fromCharCode(Math.floor(Math.random() * 25) + 97);
 			}else if (passOutputFormat[ii] == 'Q' || passOutputFormat[ii] == 'q'){
-				if(Math.random()>0.5){						
+				// add random letter
+				if(Math.random()>0.5){
 					passArray[i+1] += String.fromCharCode(Math.floor(Math.random() * 25) + 65);
 				}else{
-					passArray[i+1] += String.fromCharCode(Math.floor(Math.random() * 25) + 97);// random letter;
+					passArray[i+1] += String.fromCharCode(Math.floor(Math.random() * 25) + 97);
 				}
 			}else if (passOutputFormat[ii] == '1'){
+				// add random number
 				passArray[i+1] += Math.floor(Math.random() * 10);
 			}else if (passOutputFormat[ii] == '%'){
+				// add random special character
 				passArray[i+1] += charArray[Math.floor(Math.random() * charArrayLength)];
 			}else if (passOutputFormat[ii] == '*'){
+				// add random character
 				passArray[i+1] += String.fromCharCode(Math.floor(Math.random() * 93) + 33);
 			}else if (passOutputFormat[ii] == 'C'){
+				// add random noun
 				passArray[i+1] += nouns[Math.floor((Math.random()*10e6)%nouns.length)];
 			}else if (passOutputFormat[ii] == 'V'){
+				// add random verb
 				passArray[i+1] += verbs[Math.floor((Math.random()*10e6)%verbs.length)];
 			}else if (passOutputFormat[ii] == 'B'){
+				// add random adjective
 				passArray[i+1] += adjectives[Math.floor((Math.random()*10e6)%adjectives.length)];
-			}else if (passOutputFormat[ii] == '\\' && ii < passOutputFormat.length - 1){ // treat next character literally
+			}else if (passOutputFormat[ii] == '\\' && ii < passOutputFormat.length - 1){
+				// add next character from template (which follows "\" character)
 				passArray[i+1] += passOutputFormat[++ii];
 			}else{
+				// add next character
 				passArray[i+1] += passOutputFormat[ii];
 			}
 		}
 
-		if(document.getElementById('removeDiacritics').checked){
+		if(document.getElementById('removeDiacriticsFromPassword').checked){
+			// remove diacritics from login
 			for (let i = 0; i < passArray.length; i++){
 				passArray[i] = passArray[i].removeDiacritics();
-				loginArray[i] = loginArray[i].removeDiacritics();	
 			}
 		}
+
+		// format password according to requirements
 		let minimumCharacters = document.getElementById('minimumCharacters').value;
 		let mustIncludeLowercase = document.getElementById('mustIncludeLowercase').checked;
 		let mustIncludeUppercase = document.getElementById('mustIncludeUppercase').checked;
@@ -157,8 +208,10 @@ function buildOutputString(data){
 		let includesSpecial = false;
 		if(mustIncludeUppercase || mustIncludeLowercase || mustIncludeNumber || mustIncludeSpecial){
 			for(let j = 0; j < passArray[i+1].length; j++){
+				// check existing characters
+				// get charCode of a character without diacritics
 				let charCode = passArray[i+1].removeDiacritics().charCodeAt(j);
-				if(charCode >= 97 && charCode <= 121){						
+				if(charCode >= 97 && charCode <= 121){
 					includesLowercaseLetter = true;
 				}else if(charCode >= 65 && charCode <= 89){
 					includesUppercaseLetter = true;
@@ -171,9 +224,18 @@ function buildOutputString(data){
 					includesNumber = true;
 				}
 			}
+
+			// check requirements, existing password and add characters if needed
+			// characters are added as last ones or randomly according to
+			// "includeRandomly" value
 			if (mustIncludeLowercase && !includesLowercaseLetter){
 				if(includeRandomly){
-					passArray[i+1] = passArray[i+1].splice(Math.floor(Math.random() * passArray[i+1].length), 0, String.fromCharCode(Math.floor(Math.random() * 25) + 97));
+					passArray[i+1] =
+					passArray[i+1].splice(
+						Math.floor(Math.random() * passArray[i+1].length),
+						0,
+						String.fromCharCode(Math.floor(Math.random() * 25) + 97)
+					);
 				}else{
 					passArray[i+1] +=  String.fromCharCode(Math.floor(Math.random() * 25) + 97);
 				}
@@ -181,79 +243,109 @@ function buildOutputString(data){
 
 			if (mustIncludeUppercase && !includesUppercaseLetter){
 				if(includeRandomly){
-					passArray[i+1] = passArray[i+1].splice(Math.floor(Math.random() * passArray[i+1].length), 0, String.fromCharCode(Math.floor(Math.random() * 25) + 65));
+					passArray[i+1] =
+					passArray[i+1].splice(
+						Math.floor(Math.random() * passArray[i+1].length),
+						0,
+						String.fromCharCode(Math.floor(Math.random() * 25) + 65)
+					);
 				}else{
 					passArray[i+1] +=  String.fromCharCode(Math.floor(Math.random() * 25) + 65);
-				}				
-			}			
+				}
+			}
 
 			if (mustIncludeNumber && !includesNumber){
 				if(includeRandomly){
-					passArray[i+1] = passArray[i+1].splice(Math.floor(Math.random() * passArray[i+1].length), 0, Math.floor(Math.random() * 10));
+					passArray[i+1] =
+					passArray[i+1].splice(
+						Math.floor(Math.random() * passArray[i+1].length),
+						0,
+						Math.floor(Math.random() * 10)
+					);
 				}else{
 					passArray[i+1] +=  Math.floor(Math.random() * 10);
-				}				
+				}
 			}
 
 			if (mustIncludeSpecial && !includesSpecial){
 				if(includeRandomly){
-					passArray[i+1] = passArray[i+1].splice(Math.floor(Math.random() * passArray[i+1].length), 0, charArray[Math.floor(Math.random() * charArrayLength)]);
+					passArray[i+1] =
+					passArray[i+1].splice(
+						Math.floor(Math.random() * passArray[i+1].length),
+						0,
+						charArray[Math.floor(Math.random() * charArrayLength)]
+					);
 				}else{
 					passArray[i+1] += charArray[Math.floor(Math.random() * charArrayLength)];
-				}				
+				}
 			}
-		}			
-	
+		}
+
+		// add random letters (upper- and lowercase with 50% chance each)
+		// at the end of the existing password or randomly to meet length requirement
 		while(minimumCharacters > passArray[i+1].length){
-			if(includeRandomly){					
+			if(includeRandomly){
 				if(Math.random()>0.5){
-					passArray[i+1] = passArray[i+1].splice(Math.floor(Math.random() * passArray[i+1].length), 0, String.fromCharCode(Math.floor(Math.random() * 25) + 65));									
+					passArray[i+1] =
+					passArray[i+1].splice(
+						Math.floor(Math.random() * passArray[i+1].length),
+						0,
+						String.fromCharCode(Math.floor(Math.random() * 25) + 65)
+					);
 				}else{
-					passArray[i+1] = passArray[i+1].splice(Math.floor(Math.random() * passArray[i+1].length), 0, String.fromCharCode(Math.floor(Math.random() * 25) + 97));									
-				}				
-			}else{	
-				if(Math.random()>0.5){						
+					passArray[i+1] =
+					passArray[i+1].splice(
+						Math.floor(Math.random() * passArray[i+1].length),
+						0,
+						String.fromCharCode(Math.floor(Math.random() * 25) + 97)
+					);
+				}
+			}else{
+				if(Math.random()>0.5){
 					passArray[i+1] += String.fromCharCode(Math.floor(Math.random() * 25) + 65);
 				}else{
-					passArray[i+1] += String.fromCharCode(Math.floor(Math.random() * 25) + 97);// random letter;
-				}				
+					passArray[i+1] += String.fromCharCode(Math.floor(Math.random() * 25) + 97);
+				}
 			}
-		}		
+		}
 	}
-	
+
+	// calculate the longest generated password and login and input name
 	for (let i = 0; i < passArray.length; i++){
-		passArray[i] = passArray[i].removeDiacritics();
-		loginArray[i] = loginArray[i].removeDiacritics();
-
-		if(typeof maxLength[1] == 'undefined' || maxLength[1] < loginArray[i].length){				
-			maxLength[1] = loginArray[i].length;
-		}
-		if(typeof maxLength[2] == 'undefined' || maxLength[2] < passArray[i].length){				
-			maxLength[2] = passArray[i].length;
-		}
-	}
-	
-
-	for (let i = 0; i < fullNameArray.length; i++){
 		if(typeof maxLength[0] == 'undefined' || maxLength[0] < fullNameArray[i].length){
 			maxLength[0] = fullNameArray[i].length;
 		}
+		if(typeof maxLength[1] == 'undefined' || maxLength[1] < loginArray[i].length){
+			maxLength[1] = loginArray[i].length;
+		}
+		if(typeof maxLength[2] == 'undefined' || maxLength[2] < passArray[i].length){
+			maxLength[2] = passArray[i].length;
+		}
 	}
-	
+
+
 	let includeInput = document.getElementById('includeInput');
+	// build first line of output as a ASCII table border consisting of
+	// "-" between two "+" on corners
+	// assuming each line 12/17 characters longer than data length
+	// due to table border, two spaces between border and data and five spaces
+	// between data elements
 	if(includeInput.checked){
 		outputString = '+'.padEnd(maxLength[1] + maxLength[2] + maxLength[0] + 17, '-') + '+\n';
 	}
 	else{
 		outputString = '+'.padEnd(maxLength[1] + maxLength[2] + 12, '-') + '+\n';
 	}
-	
+
+	// for each generated password
 	for (let i = 0; i < passArray.length; i++){
+		// pad login and password with spaces to make it as long as the longest one
 		loginArray[i] = loginArray[i].padEnd(maxLength[1] + 5, ' ');
 		passArray[i] = passArray[i].padEnd(maxLength[2] + 0, ' ');
-		
+
+		// build next line of output
 		if (includeInput.checked){
-		outputString = 
+		outputString =
 			outputString +
 			'|   ' +
 			fullNameArray[i].padEnd(maxLength[0] +5, ' ') +
@@ -262,11 +354,15 @@ function buildOutputString(data){
 			'   |' +
 			'\n';
 			if(i==0){
-				outputString = outputString + '+'.padEnd(maxLength[1] + maxLength[2] + maxLength[0] + 17, '-') + '+\n';
+				// add a horizontal seperator after the header
+				outputString =
+				outputString +
+				'+'.padEnd(maxLength[1] + maxLength[2] + maxLength[0] + 17, '-')
+				+ '+\n';
 			}
 		}
 		else{
-		outputString = 
+		outputString =
 			outputString +
 			'|   ' +
 			loginArray[i] +
@@ -274,22 +370,28 @@ function buildOutputString(data){
 			'   |' +
 			'\n';
 			if(i==0){
-				outputString = outputString + '+'.padEnd(maxLength[1] + maxLength[2] + 12, '-') + '+\n';
+				// add a horizontal seperator after the header
+				outputString =
+				outputString +
+				'+'.padEnd(maxLength[1] + maxLength[2] + 12, '-') +
+				'+\n';
 			}
 		}
-		
+
 	}
+	// add horizontal border of output table
 	if(includeInput.checked){
 		outputString += '+'.padEnd(maxLength[1] + maxLength[2] + maxLength[0] + 17, '-') + '+';
 	}
 	else{
 		outputString += '+'.padEnd(maxLength[1] + maxLength[2] + 12, '-') + '+';
 	}
-	
-	
+
+
 	document.getElementById('output').value = outputString;
 }
 
+// add event handlers
 window.onload = function(){
 	document.getElementById('nameLast').onclick = inputOnChange;
 	document.getElementById('nameFirst').onclick = inputOnChange;
@@ -297,7 +399,8 @@ window.onload = function(){
 	document.getElementById('passOutputFormat').oninput = inputOnChange;
 	document.getElementById('loginOutputFormat').oninput = inputOnChange;
 	document.getElementById('includeInput').onchange = inputOnChange;
-	document.getElementById('removeDiacritics').onchange = inputOnChange;
+	document.getElementById('removeDiacriticsFromLogin').onchange = inputOnChange;
+	document.getElementById('removeDiacriticsFromPassword').onchange = inputOnChange;
 	document.getElementById('minimumCharacters').onchange = inputOnChange;
 	document.getElementById('mustIncludeLowercase').onchange = inputOnChange;
 	document.getElementById('mustIncludeUppercase').onchange = inputOnChange;
@@ -411,7 +514,7 @@ String.prototype.removeDiacritics = function() {
 // additional brackets to allow folding in editors
 let nouns = [];
 {
-	nouns = 
+	nouns =
 	["people",
 	"history",
 	"way",
@@ -2471,7 +2574,7 @@ let adjectives = [];
 }
 let verbs = [];
 {
-	verbs = 
+	verbs =
 	["is",
 	"are",
 	"has",

@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>passGen</title>
-  <meta charset="UTF-8">  
+  <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="passGen.css">
 </head>
 
@@ -24,13 +24,15 @@ Brian Gregory Williams-Adams
 </div>
 
 <div class="configFields1">
-Name: 
-First<input id="nameFirst" type="radio" name="namePosition" checked> 
+Name:
+First<input id="nameFirst" type="radio" name="namePosition" checked>
 Last<input id="nameLast" type="radio" name="namePosition">
 <br>
 Include input in output<input id="includeInput" type="checkbox" name="includeInput" checked>
 <br>
-Remove diacritics from output<input id="removeDiacritics" type="checkbox" name="removeDiacritics" checked>
+Remove diacritics from output login<input id="removeDiacriticsFromLogin" type="checkbox" name="removeDiacriticsFromLogin" checked>
+<br>
+Remove diacritics from output password<input id="removeDiacriticsFromPassword" type="checkbox" name="removeDiacriticsFromPassword" checked>
 </div>
 
 <div class="configFields2">
@@ -38,7 +40,7 @@ Remove diacritics from output<input id="removeDiacritics" type="checkbox" name="
   <br>
   Must include:
   <br>
-  lowercase letter<input id="mustIncludeLowercase" type="checkbox" name="mustIncludeLowercase">  
+  lowercase letter<input id="mustIncludeLowercase" type="checkbox" name="mustIncludeLowercase">
   <br>
   uppercase letter<input id="mustIncludeUppercase" type="checkbox" name="mustIncludeUppercase">
   <br>
@@ -49,7 +51,7 @@ Remove diacritics from output<input id="removeDiacritics" type="checkbox" name="
   include randomly<input id="includeRandomly" type="checkbox" name="includeRandomly">
   </div>
 <div class="passConfig">
-pass output format: 
+pass output format:
 <input id="passOutputFormat" value = "Nn\1234">
 <br>
 Each character in field above contributes to generated password<br>
@@ -69,7 +71,7 @@ B -- random adjective<br>
 </div>
 
 <div class="loginConfig">
-login output format: 
+login output format:
 <input id="loginOutputFormat" value = "nS">
 <br>
 Each character in field above contributes to generated login<br>

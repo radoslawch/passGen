@@ -46,9 +46,9 @@ function buildOutputString(data){
 
 	// output arrays
 	// first element is first row of the output table (header)
-	fullNameArray[0] = 'user';
-	loginArray[0] = 'login';
-	passArray[0] = 'pass';
+	fullNameArray[0] = document.getElementById("userString").value;
+	loginArray[0] = document.getElementById("loginString").value;
+	passArray[0] = document.getElementById("passwordString").value;
 
 	// for each row of input data
 	for (let i = 0; i < data.length; i++){
@@ -117,7 +117,11 @@ function buildOutputString(data){
 		if(document.getElementById('removeDiacriticsFromLogin').checked){
 			// remove diacritics from login
 			for (let i = 0; i < loginArray.length; i++){
-				loginArray[i] = loginArray[i].removeDiacritics();
+				if(i == 0){
+					loginArray[i] = loginArray[i];
+				}else{
+					loginArray[i] = loginArray[i].removeDiacritics();					
+				}
 			}
 		}
 
@@ -191,7 +195,11 @@ function buildOutputString(data){
 		if(document.getElementById('removeDiacriticsFromPassword').checked){
 			// remove diacritics from login
 			for (let i = 0; i < passArray.length; i++){
-				passArray[i] = passArray[i].removeDiacritics();
+				if(i == 0){
+					passArray[i] = passArray[i];
+				}else{
+					passArray[i] = passArray[i].removeDiacritics();
+				}				
 			}
 		}
 
@@ -407,6 +415,9 @@ window.onload = function(){
 	document.getElementById('mustIncludeNumber').onchange = inputOnChange;
 	document.getElementById('mustIncludeSpecial').onchange = inputOnChange;
 	document.getElementById('includeRandomly').onchange = inputOnChange;
+	document.getElementById('userString').oninput = inputOnChange;
+	document.getElementById('loginString').oninput = inputOnChange;
+	document.getElementById('passwordString').oninput = inputOnChange;
 	inputOnChange();
 };
 

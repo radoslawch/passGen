@@ -40,19 +40,19 @@
 	.configFields2 input{
 		background-color: rgb(220, 220, 220);
 	}
-	.passConfig {
+	.loginConfig {
 	grid-column: 1;
 	grid-row: 3;
 	background-color: rgb(240, 240, 240);
 	}
-	.passConfig input{
+	.loginConfig input{
 		background-color: rgb(220, 220, 220);
 	}
-  .loginConfig {
+  .passConfig {
 	grid-column: 2;
 	grid-row: 3;
 	background-color: rgb(220, 220, 220);
 	}
-	.loginConfig input{
+	.passConfig input{
 		background-color: rgb(240, 240, 240);
 	}

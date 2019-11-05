@@ -6,4 +6,5 @@ first one-time passwords (to be changed after first login).
 The output is formatted in a table which is easy to send to users' or
 their administrators for example by an e-mail.
 
-[Try me!](http://htmlpreview.github.io/?https://github.com/radoslawch/passGen/blob/master/passGen.html)
+[Try me here!](https://rawcdn.githack.com/radoslawch/passGen/af372c9a0bc007e404647d39e76faa965928581b/passGen.html)  
+[Or here!](http://htmlpreview.github.io/?https://github.com/radoslawch/passGen/blob/master/passGen.html)  
